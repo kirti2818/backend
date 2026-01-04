@@ -24,7 +24,7 @@ app.listen(PORT, async()=>{
     try {
         await connect()
         console.log(`Server is running on ${PORT}`)
-        console.log(`Connected to DB ${process.env.mongoDB_url}`)
+        console.log(`Connected to DB ${process.env.MONGODB_URL}`)
     } catch (error) {
         console.log(`Connection Failed ${error.message}`)
     }
