@@ -5,7 +5,7 @@ const cors = require('cors')
 // const cookieParser = require('cookie-parser')
 // app.use(cookieParser())
 const corsOptions = {
-    origin: ['http://localhost:3000','http://localhost:3001'],
+    origin: ['http://localhost:3000','http://localhost:3001','https://frontend-pi-self-1zzn0lclxw.vercel.app/'],
     credentials : true,
 }
 app.use(express.json())
