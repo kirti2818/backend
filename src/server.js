@@ -16,6 +16,9 @@ const PORT = process.env.PORT || 3000;
 
 const allRoutes = require('./routes/index');
 app.use("/api",allRoutes);
+app.get('/',(req,res)=>{
+    return res.send("Hello server started...")
+})
 
 app.listen(PORT, async()=>{
     try {
