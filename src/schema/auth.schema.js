@@ -20,7 +20,7 @@ const UserSchema = mongoose.Schema({
         type : Boolean,
         default : false
     }
-})
+},{timestamps : true,versionKey : false})
 
 const UserModel = mongoose.model('user',UserSchema)
 module.exports = UserModel;

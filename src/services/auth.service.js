@@ -1,4 +1,4 @@
-const { signupController, loginController } = require("../controller/auth.controller");
+const { signupController, loginController, verifyOtpController } = require("../controller/auth.controller");
 
 const signup = async (req, res) => {
     try {
@@ -16,16 +16,41 @@ const login = async (req, res) => {
         const body = req.body;
         if (!body) return res.status(400).json({ message: 'Please Provide Data', status: false })
         const data = await loginController(body)
+        if (!data.token) return res.status(data.code).json({ message: data.message, status: data.status })
         return res.cookie('token', data.token, {
-            maxAge: 60000, // Cookie valid for 1 hour (in milliseconds)
+            maxAge: 360000, // Cookie valid for 1 hour (in milliseconds)
             httpOnly: true, // Not accessible by client-side JS
             // secure: true,   // Only sent over HTTPS
             // sameSite: 'Strict' // Controls cross-site behavior
-        }).status(data.code).json({ message: data.message, status: data.status })
+        }).status(data.code).json({ message: data.message, status: data.status,token : data.token })
 
     } catch (error) {
         return res.status(400).json({ message: error.message, status: false })
     }
 }
 
-module.exports = { signup, login }
+const verify_otp = async (req, res) => {
+    try {
+        const body = req.body;
+        if(!body) return res.status(400).json({message : 'Please Fill All Fields',status : false})
+        const user_id = req.user_id
+        const data = await verifyOtpController({...body,user_id})
+        console.log(data,"DATAA")
+        if (!data.token){
+            console.log("KKKKKKKKK")
+            return res.status(data.code).json({ message: data.message, status: data.status })
+        }
+        return res.cookie('token', data.token, {
+            maxAge: 60000,
+            httpOnly: true
+        }).status(200).json({ message: 'Otp Verified Successfully', status: true,token : data.token })
+
+
+    } catch (error) {
+        console.log(error.message,'ERROR MESSAGE' )
+        return res.status(400).json({ message: error.message, status: false })
+
+    }
+}
+
+module.exports = { signup, login, verify_otp }
