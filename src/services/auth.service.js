@@ -18,7 +18,7 @@ const login = async (req, res) => {
         const data = await loginController(body)
         if (!data.token) return res.status(data.code).json({ message: data.message, status: data.status })
         return res.cookie('token', data.token, {
-            maxAge: 360000, // Cookie valid for 1 hour (in milliseconds)
+            maxAge: 3600000, // Cookie valid for 1 hour (in milliseconds)
             httpOnly: true, // Not accessible by client-side JS
             // secure: true,   // Only sent over HTTPS
             // sameSite: 'Strict' // Controls cross-site behavior
@@ -39,9 +39,9 @@ const verify_otp = async (req, res) => {
             return res.status(data.code).json({ message: data.message, status: data.status })
         }
         return res.cookie('token', data.token, {
-            maxAge: 60000,
+            maxAge: 3600000,
             httpOnly: true
-        }).status(200).json({ message: 'Otp Verified Successfully', status: true, token: data.token })
+        }).status(data.code).json({ message: 'Otp Verified Successfully', status: true, token: data.token })
 
 
     } catch (error) {

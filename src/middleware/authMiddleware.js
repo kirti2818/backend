@@ -4,6 +4,7 @@ const UserModel = require('../schema/auth.schema');
 const authMiddleware = async (req, res, next) => {
     try {
         const token = req.cookies.token;
+        console.log(token,req,req.cookies)
         if (!token) return res.status(400).json({ message: 'User not Authenticate!', status: false });
         const decodeToken = await jwt.verify(token, process.env.SECRET_KEY);
         if (!decodeToken) return res.status(400).json({ message: 'User not Authenticate', status: false });
