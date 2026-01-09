@@ -76,4 +76,22 @@ const verifyOtpController = async (data) => {
     }
 }
 
-module.exports = { signupController, loginController, verifyOtpController }
+const resendOtpController = async (data) => {
+    try {
+        const { user_id } = data
+        // delete all exiting otps validate by user id
+        await otpModel.deleteMany({user_id})
+        
+        const otp = generateOtp()
+        const saveOtp = new otpModel({ user_id, otp, expiry_date: dayjs().add(1, 'm').format() })
+        await saveOtp.validate()
+        await saveOtp.save()
+        return { message: 'Resend OTP, Please Check email!', status: false, code: 200 }
+
+    } catch (error) {
+        return { message: error.message, status: false, code: 400 }
+
+    }
+}
+
+module.exports = { signupController, loginController, verifyOtpController, resendOtpController }

@@ -1,4 +1,4 @@
-const { signupController, loginController, verifyOtpController } = require("../controller/auth.controller");
+const { signupController, loginController, verifyOtpController, resendOtpController } = require("../controller/auth.controller");
 
 const signup = async (req, res) => {
     try {
@@ -22,7 +22,7 @@ const login = async (req, res) => {
             httpOnly: true, // Not accessible by client-side JS
             // secure: true,   // Only sent over HTTPS
             // sameSite: 'Strict' // Controls cross-site behavior
-        }).status(data.code).json({ message: data.message, status: data.status,token : data.token })
+        }).status(data.code).json({ message: data.message, status: data.status, token: data.token })
 
     } catch (error) {
         return res.status(400).json({ message: error.message, status: false })
@@ -32,25 +32,35 @@ const login = async (req, res) => {
 const verify_otp = async (req, res) => {
     try {
         const body = req.body;
-        if(!body) return res.status(400).json({message : 'Please Fill All Fields',status : false})
+        if (!body) return res.status(400).json({ message: 'Please Fill All Fields', status: false })
         const user_id = req.user_id
-        const data = await verifyOtpController({...body,user_id})
-        console.log(data,"DATAA")
-        if (!data.token){
-            console.log("KKKKKKKKK")
+        const data = await verifyOtpController({ ...body, user_id })
+        if (!data.token) {
             return res.status(data.code).json({ message: data.message, status: data.status })
         }
         return res.cookie('token', data.token, {
             maxAge: 60000,
             httpOnly: true
-        }).status(200).json({ message: 'Otp Verified Successfully', status: true,token : data.token })
+        }).status(200).json({ message: 'Otp Verified Successfully', status: true, token: data.token })
 
 
     } catch (error) {
-        console.log(error.message,'ERROR MESSAGE' )
+        console.log(error.message, 'ERROR MESSAGE')
         return res.status(400).json({ message: error.message, status: false })
 
     }
 }
 
-module.exports = { signup, login, verify_otp }
+const resend_otp = async (req, res) => {
+    try {
+        const user_id = req.user_id
+        const data = await resendOtpController({ user_id })
+        return res.status(data.code).json({ message: data.message, status: data.status })
+
+    } catch (error) {
+        return res.status(400).json({ message: error.message, status: false })
+
+    }
+}
+
+module.exports = { signup, login, verify_otp, resend_otp }
