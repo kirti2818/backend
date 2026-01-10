@@ -1,4 +1,5 @@
 const { signupController, loginController, verifyOtpController, resendOtpController } = require("../controller/auth.controller");
+let cookieOption = { maxAge: 3 * 24 * 60 * 60 * 1000, httpOnly: true , secure: true,sameSite : "none" };
 
 const signup = async (req, res) => {
     try {
@@ -17,12 +18,7 @@ const login = async (req, res) => {
         if (!body) return res.status(400).json({ message: 'Please Provide Data', status: false })
         const data = await loginController(body)
         if (!data.token) return res.status(data.code).json({ message: data.message, status: data.status })
-        return res.cookie('token', data.token, {
-            maxAge: 3600000, // Cookie valid for 1 hour (in milliseconds)
-            httpOnly: true, // Not accessible by client-side JS
-            secure: true,   // Only sent over HTTPS
-            sameSite: 'Strict' // Controls cross-site behavior
-        }).status(data.code).json({ message: data.message, status: data.status, token: data.token })
+        return res.cookie('token', data.token, cookieOption).status(data.code).json({ message: data.message, status: data.status, token: data.token })
 
     } catch (error) {
         return res.status(400).json({ message: error.message, status: false })
@@ -38,12 +34,7 @@ const verify_otp = async (req, res) => {
         if (!data.token) {
             return res.status(data.code).json({ message: data.message, status: data.status })
         }
-        return res.cookie('token', data.token, {
-            maxAge: 3600000,
-            httpOnly: true,
-            secure: true,   // Only sent over HTTPS
-            sameSite: 'Strict' // Controls cross-site behavior
-        }).status(data.code).json({ message: 'Otp Verified Successfully', status: true, token: data.token })
+        return res.cookie('token', data.token, cookieOption).status(data.code).json({ message: 'Otp Verified Successfully', status: true, token: data.token })
 
 
     } catch (error) {
