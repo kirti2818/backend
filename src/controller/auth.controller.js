@@ -38,7 +38,9 @@ const loginController = async (data) => {
         const token = generateToken({ email: isUserExist.email, user_name: isUserExist.user_name, id: isUserExist._id, is_email_verified: isUserExist.is_email_verified })
 
         if (!isUserExist.is_email_verified) {
-            const otp = await generateOtp()
+            console.log("HELLO...")
+            const otp = generateOtp()
+            console.log(otp,"HHHH")
             //delete existing otp validate by user id
             await otpModel.deleteMany({ user_id: new mongoose.Types.ObjectId(isUserExist._id) })
             const saveOtp = new otpModel({ user_id: isUserExist._id, otp, expiry_date: dayjs().add(1, 'm').format() })
@@ -81,7 +83,7 @@ const resendOtpController = async (data) => {
         const { user_id } = data
         // delete all exiting otps validate by user id
         await otpModel.deleteMany({user_id})
-        
+
         const otp = generateOtp()
         const saveOtp = new otpModel({ user_id, otp, expiry_date: dayjs().add(1, 'm').format() })
         await saveOtp.validate()
