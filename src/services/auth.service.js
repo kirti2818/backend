@@ -1,5 +1,11 @@
 const { signupController, loginController, verifyOtpController, resendOtpController } = require("../controller/auth.controller");
-let cookieOption = { maxAge: 3 * 24 * 60 * 60 * 1000, httpOnly: true , secure: true,sameSite : "none", path: "/" };
+const cookieOption = {
+    maxAge: 3 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    sameSite: true,
+    secure: true,
+    domain: 'backend-3-yzs6.onrender.com',
+};
 
 const signup = async (req, res) => {
     try {
