@@ -2,7 +2,7 @@ const { signupController, loginController, verifyOtpController, resendOtpControl
 const cookieOption = {
     maxAge: 3 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    sameSite: true,
+    sameSite: 'none',
     secure: true,
     domain: 'backend-3-yzs6.onrender.com',
 };
