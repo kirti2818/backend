@@ -20,8 +20,8 @@ const login = async (req, res) => {
         return res.cookie('token', data.token, {
             maxAge: 3600000, // Cookie valid for 1 hour (in milliseconds)
             httpOnly: true, // Not accessible by client-side JS
-            // secure: true,   // Only sent over HTTPS
-            // sameSite: 'Strict' // Controls cross-site behavior
+            secure: true,   // Only sent over HTTPS
+            sameSite: 'Strict' // Controls cross-site behavior
         }).status(data.code).json({ message: data.message, status: data.status, token: data.token })
 
     } catch (error) {
@@ -40,7 +40,9 @@ const verify_otp = async (req, res) => {
         }
         return res.cookie('token', data.token, {
             maxAge: 3600000,
-            httpOnly: true
+            httpOnly: true,
+            secure: true,   // Only sent over HTTPS
+            sameSite: 'Strict' // Controls cross-site behavior
         }).status(data.code).json({ message: 'Otp Verified Successfully', status: true, token: data.token })
 
 
