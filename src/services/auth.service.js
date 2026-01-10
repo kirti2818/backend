@@ -1,10 +1,11 @@
 const { signupController, loginController, verifyOtpController, resendOtpController } = require("../controller/auth.controller");
+const isProd = process.env.NODE_ENV === 'production';
 const cookieOption = {
     maxAge: 3 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    sameSite: 'none',
-    secure: true,
-    domain: 'backend-3-yzs6.onrender.com',
+    sameSite: isProd ? 'none' : 'lax',
+    secure: isProd,
+    domain: process.env.COOKIE_DOMAIN || undefined,
 };
 
 const signup = async (req, res) => {
