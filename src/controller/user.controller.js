@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
 const UserModel = require("../schema/auth.schema");
 
-const getAllUsers = async ({ user_id, search }) => {
+const getAllUsersController = async ({ user_id, search }) => {
   try {
 
     const findAllUser = await UserModel.find({
       _id: { $ne: new mongoose.Types.ObjectId(user_id) },
+      is_email_verified : true,
       $or: [
         { name: { $regex: search, $options: "i" } },
         // { email: { $regex: search, $options: "i" } }
@@ -23,4 +24,4 @@ const getAllUsers = async ({ user_id, search }) => {
   }
 };
 
-module.exports = {getAllUsers}
+module.exports = {getAllUsersController}

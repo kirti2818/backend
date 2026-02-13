@@ -11,6 +11,7 @@ const authMiddleware = async (req, res, next) => {
         const findUser = await UserModel.findById(decodeToken.id)
         if(findUser){
             req.user_id = decodeToken.id;
+            req.user_details = decodeToken
             return next()
         }
         
