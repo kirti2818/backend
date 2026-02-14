@@ -24,4 +24,17 @@ const addSocketController = async (data) => {
     }
 }
 
-module.exports = { addSocketController }
+const deleteSocketController = async (data) => {
+    try {
+        const { user_id } = data
+        if (!user_id) return { message: 'Please Provide User Id', status: false, code: 400 }
+        await socketModel.deleteOne({ user_id })
+        return { message: 'Socket Deleted', status: true, code: 200 }
+
+    } catch (error) {
+        return { message: error.message, status: false, code: 400 } 
+
+    }
+}
+
+module.exports = { addSocketController, deleteSocketController }

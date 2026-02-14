@@ -22,6 +22,7 @@ app.use(cors(corsOptions))
 
 
 const allRoutes = require('./routes/index');
+const { deleteSocketController } = require('./controller/socket.controller');
 app.use("/api", allRoutes);
 
 // create server and socket connection
@@ -50,16 +51,20 @@ io.use((socket, next) => {
     next(new Error(err.message));
   }
 });
-
+const onlineUsers = new Map();
 io.on("connection", async (socket) => {
   try {
-    console.log("User connected:", socket.id,socket.user.id);
+    console.log("User connected:", socket.id, socket.user.id);
+    if (!onlineUsers.has(socket.user.id)) {
+      onlineUsers.set(socket.user.id, socket.id)
+    }
 
-    // socket.emit("hello", { msg: "from server" });
+    // add socket of user.
+    const socket_added = await add_socket({ user_id: socket.user.id, socket_id: socket.id })
+    console.log("User joined chat", socket.id, socket_added.message);
 
-    // socket.on("test", (data) => {
-    //   console.log("test event", data);
-    // });
+    console.log("Online Users:", onlineUsers);
+
 
     socket.onAny((event, ...args) => {
       console.log("🔥 Event received:", event, args);
@@ -68,14 +73,20 @@ io.on("connection", async (socket) => {
     socket.onAnyOutgoing((event, ...args) => {
       console.log("🚀 Event sent:", event, args);
     })
-    socket.on("join_user", async () => {
-      // add socket of user.
-      const socket_added = await add_socket({ user_id : socket.user.id,socket_id: socket.id })
-      console.log("User joined chat", socket.id,socket_added.message);
-    })
 
-    socket.on("disconnect", () => {
-      console.log("User disconnected:", socket.id);
+    socket.on("send_message", (data) => {
+      console.log("Message received:", data);
+      // Broadcast the message to all connected clients
+      io.emit("receive_message", data);
+    });
+
+    socket.on("disconnect", async (reason) => {
+      console.log("User disconnected:", socket.id, reason);
+      if (reason !== 'transport close') {
+        await deleteSocketController({ user_id: socket.user.id })
+        onlineUsers.delete(socket.user.id)
+      }
+
     });
 
   } catch (error) {
