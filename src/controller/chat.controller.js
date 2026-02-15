@@ -75,4 +75,60 @@ const createChatController = async (data) => {
     }
 }
 
-module.exports = { createChatController }
+
+const getAllChatController = async (data) => {
+    try {
+        console.log(data.user_id)
+        // const get_chats = await chatModel.find({ participants: { $in: [data.user_id] } })
+
+        const get_chats = await chatModel.aggregate([
+            {
+                $match: {
+                    participants: { $in: [new Types.ObjectId(data.user_id)] }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'participants',
+                    foreignField: '_id',
+                    as: 'participant_details'
+                }
+            },
+            {
+                $addFields: {
+                    participant_details: {
+                        $filter: {
+                            input: "$participant_details",
+                            as: "participant",
+                            cond: {
+                                $ne: ["$$participant._id", new Types.ObjectId(data.user_id)]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'messages',
+                    localField: 'last_message',
+                    foreignField: '_id',
+                    as: 'last_message_detail'
+                }
+            },
+        ])
+        return {
+            message: "Chats fetched successfully",
+            status: true,
+            code: 200,
+            data: get_chats
+        };
+
+    } catch (error) {
+
+        return { message: error.message, status: false, code: 400 }
+
+    }
+}
+
+module.exports = { createChatController, getAllChatController }
