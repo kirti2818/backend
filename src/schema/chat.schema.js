@@ -19,13 +19,10 @@ const chatSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'
     },
-    // last_message: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'message'
-    // }
-
-
-
+    last_message: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'message'
+    }
 
 }, { timestamps: true, versionKey: false })
 

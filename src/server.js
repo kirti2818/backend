@@ -23,6 +23,7 @@ app.use(cors(corsOptions))
 
 const allRoutes = require('./routes/index');
 const { deleteSocketController } = require('./controller/socket.controller');
+const { send_message } = require('./services/message.service');
 app.use("/api", allRoutes);
 
 // create server and socket connection
@@ -73,16 +74,19 @@ io.on("connection", async (socket) => {
       console.log("🚀 Event sent:", event, args);
     })
 
-    socket.on("send_message", (data) => {
-      const receiverSocketId = onlineUsers.get(data.to);
+    socket.on("send_message", async (data) => {
+      const add_message = await send_message({ sender_id: data.to, user_id: socket.user.id, message: data.content })
+      if (add_message.code == 200) {
+        const receiverSocketId = onlineUsers.get(data.to);
 
-      if (receiverSocketId) {
-        io.to(receiverSocketId).emit("receive_message", {
-          from: socket.user.id,
-          content: data.content
-        });
-      } else {
-        console.log("User not online");
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit("receive_message", {
+            from: socket.user.id,
+            content: data.content
+          });
+        } else {
+          console.log("User not online");
+        }
       }
     });
 
@@ -90,15 +94,14 @@ io.on("connection", async (socket) => {
     socket.on("disconnect", async (reason) => {
       console.log("User disconnected:", socket.id, reason);
       // if (reason !== 'transport close') {
-        await deleteSocketController({ user_id: socket.user.id })
-        onlineUsers.delete(socket.user.id)
+      await deleteSocketController({ user_id: socket.user.id })
+      onlineUsers.delete(socket.user.id)
       // }
 
     });
 
   } catch (error) {
-    console.log(error.message, "SOOOO");
-
+    console.log(error.message);
 
   }
 });
