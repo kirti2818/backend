@@ -35,6 +35,7 @@ const io = new Server(server, {
 io.use((socket, next) => {
   try {
     const cookies = socket.handshake.headers.cookie;
+    console.log(cookies,"cookiescookiescookies")
     if (!cookies) {
       return next(new Error("No cookies found"));
     }
