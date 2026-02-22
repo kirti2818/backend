@@ -32,16 +32,25 @@ const io = new Server(server, {
   cors: corsOptions,
 });
 
+// extra logging for debugging handshake
+io.on('connect_error', (err) => {
+  console.error('Socket connect_error:', err && err.message ? err.message : err);
+});
+
 io.use((socket, next) => {
   try {
     const cookies = socket.handshake.headers.cookie;
-    console.log(cookies,"cookiescookiescookies")
+    console.log('socket handshake headers:', socket.handshake.headers);
     if (!cookies) {
-      return next(new Error("No cookies found"));
+      // don't fail immediately; allow token fallback from auth
+      console.log('No cookies present in handshake — will check auth token fallback');
+      // continue without returning so handshake.auth token can be used
     }
 
-    const parsedCookies = cookie.parse(cookies);
-    const token = parsedCookies.token;
+    const parsedCookies = cookies ? cookie.parse(cookies) : {};
+    // accept token either from cookie (first-party) or from handshake.auth (sent by client)
+    const token = parsedCookies.token || socket.handshake?.auth?.token;
+    console.log(token)
 
     if (!token) {
       return next(new Error("No token found"));
