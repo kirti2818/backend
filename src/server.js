@@ -102,11 +102,20 @@ io.on("connection", async (socket) => {
       }
     });
 
-    socket.on("disconnect", async (reason) => {
-      console.log("❌ Disconnect:", socket.id,socket.user.id, "Reason:", reason);
-      await deleteSocketController({ user_id: socket.user.id })
-      onlineUsers.delete(socket.user.id)
-    });
+   socket.on("disconnect", async (reason) => {
+  console.log("❌ Disconnect:", socket.id, "Reason:", reason);
+
+  const currentSocketId = onlineUsers.get(socket.user.id);
+
+  if (currentSocketId === socket.id) {
+    console.log("Deleting active socket");
+
+    await deleteSocketController({ user_id: socket.user.id });
+    onlineUsers.delete(socket.user.id);
+  } else {
+    console.log("Old socket disconnected, ignoring...");
+  }
+});
 
   } catch (error) {
     console.log(error.message);
