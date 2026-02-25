@@ -27,6 +27,7 @@ const addSocketController = async (data) => {
 const deleteSocketController = async (data) => {
     try {
         const { user_id } = data
+        console.log(user_id,"user_id")
         if (!user_id) return { message: 'Please Provide User Id', status: false, code: 400 }
         await socketModel.deleteOne({ user_id })
         return { message: 'Socket Deleted', status: true, code: 200 }
