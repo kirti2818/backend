@@ -13,10 +13,14 @@ const addSocketController = async (data) => {
             const add_socket = new socketModel({ socket_id, user_id })
             await add_socket.validate()
             await add_socket.save()
-            return { message: `Socket Added of ${user_details.name}`, status: true, code: 200, socketId : socket_id }
+            return { message: `Socket Added of ${user_details.name}`, status: true, code: 200, socketId: socket_id }
         }
-        const updated_socket = await socketModel.updateOne({ user_id }, { socket_id },{new : true})
-        return { message: `Socket Updated of ${user_details.name}`, status: true, code: 200,socketId : updated_socket?.socket_id }
+        const updated_socket = await socketModel.findOneAndUpdate(
+            { user_id },
+            { $set: { socket_id } },
+            { new: true, upsert: true }
+        );
+        return { message: `Socket Updated of ${user_details.name}`, status: true, code: 200, socketId: updated_socket?.socket_id }
 
 
 
@@ -28,13 +32,13 @@ const addSocketController = async (data) => {
 const deleteSocketController = async (data) => {
     try {
         const { user_id } = data
-        console.log(user_id,"user_id")
+        console.log(user_id, "user_id")
         if (!user_id) return { message: 'Please Provide User Id', status: false, code: 400 }
         await socketModel.deleteOne({ user_id })
         return { message: 'Socket Deleted', status: true, code: 200 }
 
     } catch (error) {
-        return { message: error.message, status: false, code: 400 } 
+        return { message: error.message, status: false, code: 400 }
 
     }
 }

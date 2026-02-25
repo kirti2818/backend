@@ -73,7 +73,7 @@ io.on("connection", async (socket) => {
     const socket_added = await add_socket({ user_id: socket.user.id, socket_id: socket.id })
     onlineUsers.set(socket.user.id, socket_added?.socketId)
 
-    console.log("User joined chat", socket.id, socket_added.message);
+    console.log("User joined chat", socket.id, socket_added);
 
     console.log("Online Users:", onlineUsers);
 
