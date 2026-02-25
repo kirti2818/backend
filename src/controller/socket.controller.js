@@ -15,7 +15,8 @@ const addSocketController = async (data) => {
             await add_socket.save()
             return { message: `Socket Added of ${user_details.name}`, status: true, code: 200, socketId : socket_id }
         }
-        return { message: `Socket Already Added of ${user_details.name}`, status: true, code: 200,socketId : find_user_socket?.socket_id }
+        const updated_socket = await socketModel.updateOne({ user_id }, { socket_id },{new : true})
+        return { message: `Socket Updated of ${user_details.name}`, status: true, code: 200,socketId : updated_socket?.value?.socket_id }
 
 
 
