@@ -40,7 +40,7 @@ io.on('connect_error', (err) => {
 io.use((socket, next) => {
   try {
     const cookies = socket.handshake.headers.cookie;
-    console.log('socket handshake headers:', socket.handshake.headers);
+    // console.log('socket handshake headers:', socket.handshake.headers);
     if (!cookies) {
       // don't fail immediately; allow token fallback from auth
       console.log('No cookies present in handshake — will check auth token fallback');
@@ -49,8 +49,10 @@ io.use((socket, next) => {
 
     const parsedCookies = cookies ? cookie.parse(cookies) : {};
     // accept token either from cookie (first-party) or from handshake.auth (sent by client)
+    // console.log(socket.handshake,"socket.handshake?.auth?.token");
+
     const token = parsedCookies.token || socket.handshake?.auth?.token;
-    console.log(token)
+    // console.log(token)
 
     if (!token) {
       return next(new Error("No token found"));
@@ -100,14 +102,10 @@ io.on("connection", async (socket) => {
       }
     });
 
-
     socket.on("disconnect", async (reason) => {
-      console.log("User disconnected:", socket.id, reason);
-      // if (reason !== 'transport close') {
+      console.log("❌ Disconnect:", socket.id, "Reason:", reason);
       await deleteSocketController({ user_id: socket.user.id })
       onlineUsers.delete(socket.user.id)
-      // }
-
     });
 
   } catch (error) {
