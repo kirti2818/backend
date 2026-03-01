@@ -1,4 +1,4 @@
-const { getAllUsersController } = require("../controller/user.controller");
+const { getAllUsersController,getMeController } = require("../controller/user.controller");
 
 const get_all_user = async (req, res) => {
     try {
@@ -14,4 +14,16 @@ const get_all_user = async (req, res) => {
     }
 }
 
-module.exports = { get_all_user }
+const get_me = async(req,res)=>{
+    try {
+        const user_id = req.user_id
+        const data = await getMeController({user_id})
+        return res.status(data.code).json({message : data.message, status : data.status, data : data.data})
+        
+    } catch (error) {
+        return res.status(400).json({message : error.message, status : false})
+        
+    }
+}
+
+module.exports = { get_all_user,get_me }

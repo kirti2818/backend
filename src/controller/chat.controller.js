@@ -54,7 +54,7 @@ const createChatController = async (data) => {
         ])
         if (findChat.length) {
             const updateLastMessage = await chatModel.findByIdAndUpdate(findChat[0]._id, { last_message }, { new: true })
-            return { message: 'Chat Already created, last message updated', status: true, code: 200 }
+            return { message: 'Chat Already created, last message updated', status: true, code: 200, chatId: updateLastMessage._id }
         }
 
         if (is_group_chat) {
@@ -65,8 +65,7 @@ const createChatController = async (data) => {
         const createChat = new chatModel({ ...dataToInsert, last_message })
         await createChat.validate();
         await createChat.save();
-
-        return { message: 'Chat Created', status: true, code: 200 }
+        return { message: 'Chat Created', status: true, code: 200, chatId: createChat._id }
 
     } catch (error) {
         console.log('Error in Create chat controller ...', error.message)
@@ -78,7 +77,6 @@ const createChatController = async (data) => {
 
 const getAllChatController = async (data) => {
     try {
-        console.log(data.user_id)
         // const get_chats = await chatModel.find({ participants: { $in: [data.user_id] } })
 
         const get_chats = await chatModel.aggregate([

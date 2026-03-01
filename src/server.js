@@ -52,7 +52,6 @@ io.use((socket, next) => {
     // console.log(socket.handshake,"socket.handshake?.auth?.token");
 
     const token = parsedCookies.token || socket.handshake?.auth?.token;
-    console.log(token,"TOKEN IN SOCKET MIDDLEWARE")
 
     if (!token) {
       return next(new Error("No token found"));
@@ -93,8 +92,10 @@ io.on("connection", async (socket) => {
 
         if (receiverSocketId) {
           io.to(receiverSocketId).emit("receive_message", {
-            from: socket.user.id,
-            content: data.content
+            data: add_message?.data,
+            // from: socket.user.id,
+            // content: data.content,
+            // _id : add_message?._id
           });
         } else {
           console.log("User not online");
@@ -102,20 +103,20 @@ io.on("connection", async (socket) => {
       }
     });
 
-   socket.on("disconnect", async (reason) => {
-  console.log("❌ Disconnect:", socket.id, "Reason:", reason);
+    socket.on("disconnect", async (reason) => {
+      console.log("❌ Disconnect:", socket.id, "Reason:", reason);
 
-  const currentSocketId = onlineUsers.get(socket.user.id);
+      const currentSocketId = onlineUsers.get(socket.user.id);
 
-  if (currentSocketId === socket.id) {
-    console.log("Deleting active socket");
+      if (currentSocketId === socket.id) {
+        console.log("Deleting active socket");
 
-    await deleteSocketController({ user_id: socket.user.id });
-    onlineUsers.delete(socket.user.id);
-  } else {
-    console.log("Old socket disconnected, ignoring...");
-  }
-});
+        await deleteSocketController({ user_id: socket.user.id });
+        onlineUsers.delete(socket.user.id);
+      } else {
+        console.log("Old socket disconnected, ignoring...");
+      }
+    });
 
   } catch (error) {
     console.log(error.message);

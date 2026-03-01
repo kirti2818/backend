@@ -6,7 +6,7 @@ const getAllUsersController = async ({ user_id, search }) => {
 
     const findAllUser = await UserModel.find({
       _id: { $ne: new mongoose.Types.ObjectId(user_id) },
-      is_email_verified : true,
+      is_email_verified: true,
       $or: [
         { name: { $regex: search, $options: "i" } },
         // { email: { $regex: search, $options: "i" } }
@@ -19,9 +19,22 @@ const getAllUsersController = async ({ user_id, search }) => {
     return { message: 'No user found', status: true, code: 200, data: [] };
 
   } catch (error) {
-    console.log(error);
+    console.log("ERROR IN GET ALL USER CONTROLLER",error.message);
     return { message: error.message, code: 400, status: false };
   }
 };
 
-module.exports = {getAllUsersController}
+const getMeController = async (body) => {
+  try {
+    const { user_id } = body
+    const getMe = await UserModel.findById(user_id)
+    return { message: 'Get Me', status: true, data: getMe, code: 200 }
+
+  } catch (error) {
+    return { message: error.message, code: 400, status: false }
+
+
+  }
+}
+
+module.exports = { getAllUsersController, getMeController }
