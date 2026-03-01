@@ -61,4 +61,13 @@ const resend_otp = async (req, res) => {
     }
 }
 
-module.exports = { signup, login, verify_otp, resend_otp }
+const logout = async(req,res)=>{
+    try {
+        return res.clearCookie('token', cookieOption).status(200).json({ message: 'Logged Out Successfully', status: true })
+    } catch (error) {
+        return res.status(400).json({ message: error.message, status: false })
+    }
+    
+}
+
+module.exports = { signup, login, verify_otp, resend_otp, logout }
